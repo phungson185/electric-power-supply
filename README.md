@@ -4,8 +4,8 @@
 
 ```bash
 make info
-make log
 make build
+make log
 ./server
 ./client
 ```
