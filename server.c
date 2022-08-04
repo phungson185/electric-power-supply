@@ -62,6 +62,7 @@ void sig_chld(int singno)
 command convertRequestToCommand(char *request)
 {
   char copy[100];
+  printf("%s\n", request);
   strcpy(copy, request);
   command cmd;
   char *token;
@@ -166,6 +167,7 @@ int main()
         {
           sleep(1);
           sprintf(shm2, "%s|%s|%s|", cmd.params[0], cmd.params[1], cmd.params[2]);
+          printf("%s\n", shm2);
           *shm = *shm - currentVoltage;
           currentVoltage = atoi(cmd.params[2]);
           *shm = *shm + currentVoltage;
