@@ -76,10 +76,10 @@ int main()
   clientSocket = socket(AF_INET, SOCK_STREAM, 0);
   if (clientSocket < 0)
   {
-    printf("[-]Kết nối bị lỗi.\n");
+    printf("[-]Connection Error.\n");
     exit(1);
   }
-  printf("[+]Client Socket đã được kết nối.\n");
+  printf("[+]Client Socket connected\n");
 
   memset(&serverAddr, '\0', sizeof(serverAddr));
   serverAddr.sin_family = AF_INET;
@@ -88,10 +88,10 @@ int main()
 
   if (connect(clientSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
   {
-    printf("[-]Ket noi bi loi.\n");
+    printf("[-]Connection Error.\n");
     exit(1);
   }
-  printf("[+]Đã kết nối thành công tới Server.\n");
+  printf("[+]Server connection successful.\n");
 
   while (1)
   {
@@ -110,24 +110,24 @@ void showMenuDevices()
   while (1)
   {
     choice = 0;
-    printf("\n-----------------ĐIÈU KHIỂN ĐIỆN NHÀ THÔNG MINH-------------------------\n");
-    printf("Chọn thiết bị để sử dụng\n");
+    printf("\n----------------Electric Power Supply-------------------------\n");
+    printf("Device\n");
     printf("| 1. TV\n");
-    printf("| 2. Điều hoà\n");
+    printf("| 2. AC\n");
     printf("| 3. PC\n");
-    printf("| 4. Thoát\n");
-    printf("Mời bạn nhập mã tcủa thiết bị: ");
+    printf("| 4. Exit\n");
+    printf("Choice: ");
     while (choice == 0)
     {
       if (scanf("%d", &choice) < 1)
       {
         choice = 0;
       }
-      if (choice < 1 || choice > 6)
+      if (choice < 1 || choice > 4)
       {
         choice = 0;
-        printf("Thiết bị nhập không đúng!\n");
-        printf("Hãy nhập lại: ");
+        printf("Incorrect Device!\n");
+        printf("Enter Again: ");
       }
       while ((c = getchar()) != '\n')
         ;
@@ -172,23 +172,23 @@ void showMenuAction(char *deviceName, int MODE_DEFAULT, int MODE_SAVING)
   while (1)
   {
     choice = 0;
-    printf("\n\n-----------------ĐIỀU KHIỂN NHÀ CHẾ ĐỘ THÔNG MINH-------------------------\n");
-    printf("Chọn chế độ hoạt động của %s:\n", deviceName);
-    printf("| 1. Chế độ bình thường - Công suất %d \n", MODE_DEFAULT);
-    printf("| 2. Che do tiet kiem nang luong - Công suất %d (Chế độ này sẽ ảnh hưởng đến hiệu năng của thiết bị)\n", MODE_SAVING);
-    printf("| 3. Tắt thiết bị và thoát\n");
-    printf("Mời bạn chọn chế độ: ");
+    printf("\n\n-----------------Device Menu-------------------------\n");
+    printf("%s's Mode:\n", deviceName);
+    printf("| 1. Normal - Power %d \n", MODE_DEFAULT);
+    printf("| 2. Saving - Power %d (This mode will affect to  device's performance)\n", MODE_SAVING);
+    printf("| 3. Shutdown and exit\n");
+    printf("Select mode: ");
     while (choice == 0)
     {
       if (scanf("%d", &choice) < 1)
       {
         choice = 0;
       }
-      if (choice < 1 || choice > 4)
+      if (choice < 1 || choice > 3)
       {
         choice = 0;
-        printf("Chế độ không thích hợp!\n");
-        printf("Mời chọn lại: ");
+        printf("Incorrect mode!\n");
+        printf("Please choice again : ");
       }
       while ((c = getchar()) != '\n')
         ;
@@ -308,8 +308,11 @@ void runDevice(int defaultVoltage, int savingVoltage, char *deviceName, int isSa
   char response[100];
   char buffer[20];
   char param[20];
+  char tmpName[20];
+  char firstName[20];
   int countDown;
   int currentVoltage;
+  strcpy(tmpName, deviceName);
   if (isSaving)
   {
     strcat(deviceName, "|SAVING|");
@@ -330,11 +333,12 @@ void runDevice(int defaultVoltage, int savingVoltage, char *deviceName, int isSa
   countDown = 10;
   while (1)
   {
+    strcpy(firstName, tmpName);
     if (*shm <= threshold)
     {
       if (*sumFirstVotage <= threshold && check == 1)
       {
-        printf("Các thiết bị chuyển về chế độ ban đầu!\n");
+        printf("Device return to original mode!\n");
         if (firstCase == 1)
         {
           if (strstr(firstDiviceName, "|SAVING|") == NULL)
@@ -354,14 +358,14 @@ void runDevice(int defaultVoltage, int savingVoltage, char *deviceName, int isSa
       }
       else
       {
-        printf("Mức năng lượng tiêu thụ tại thời điểm hiện tại %d\n Ấn enter để ngắt thiết bị\n", *shm);
+        printf("Current energy consumption %d\n Enter to shutdown\n", *shm);
       }
     }
     else if (*shm <= maxThreshold)
     {
       if (*sumFirstVotage <= maxThreshold && check == 1)
       {
-        printf("Các thiết bị chuyển về chế độ ban đầu!\n");
+        printf("Device return to original mode!\n");
         if (firstCase == 1)
         {
           if (strstr(firstDiviceName, "|SAVING|") == NULL)
@@ -381,21 +385,22 @@ void runDevice(int defaultVoltage, int savingVoltage, char *deviceName, int isSa
       }
       else
       {
-        printf("Đang vượt qua mức tiêu thụ ngưỡi cho phép. Mức tiêu thụ năng lượng hiện tại %d\n", *shm);
+        printf("Exceeding allowable threshold. Current energy consumption %d\n", *shm);
       }
     }
     else
     {
       if (!isSaving)
       {
-        printf("Ngưỡng vượt qua, các thiết bị chuyển về chế độ tiết kiệm!\n");
+        printf("Threshold exceeded, all device turning to saving mode!\n");
         currentVoltage = savingVoltage;
-        switchMode(deviceName, "SWITCH", currentVoltage);
+        strcat(firstName, "|SAVING|"); /*bug day*/
+        switchMode(firstName, "SWITCH", currentVoltage);
         check = 1;
       }
       if (*shm > maxThreshold)
       {
-        printf("Đã vượt qua mức tiêu thụ ngưỡng tối đã. Thiết bị sẽ bị dừng trong %d\n", countDown);
+        printf("Supply exceeded. Device will be shutdown in %d\n", countDown);
         countDown--;
         if (countDown < 0)
         {
