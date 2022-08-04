@@ -27,7 +27,7 @@ int listenSock, connectSock, n;
 pid_t pid;
 char request[MAXLINE];
 struct sockaddr_in serverAddr, clientAddr;
-socklen_t clilen;
+socklen_t client;
 command cmd;
 char *shm2;
 
@@ -55,7 +55,7 @@ void sig_chld(int singno)
   pid_t pid;
   int stat;
   while ((pid = waitpid(-1, &stat, WNOHANG)) > 0)
-    printf("child %d terminated\n", pid);
+    printf("Client with port %d disconnected\n", ntohs(clientAddr.sin_port));
   return;
 }
 
@@ -82,7 +82,6 @@ command convertRequestToCommand(char *request)
 
 int main()
 {
-
   int shmid;
   key_t key;
   int *shm;
@@ -125,7 +124,7 @@ int main()
   getInfo("1111");
   if ((listenSock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
   {
-    printf("Loi tao socket\n");
+    printf("Create socket error");
     exit(1);
   }
   serverAddr.sin_family = AF_INET;
@@ -138,18 +137,19 @@ int main()
 
   if (bind(listenSock, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
   {
-    printf("Loi bind\n");
+    printf("Bind socket error");
     exit(2);
   }
 
   listen(listenSock, LISTENQ);
-  clilen = sizeof(clientAddr);
+  client = sizeof(clientAddr);
 
   while (1)
   {
-    connectSock = accept(listenSock, (struct sockaddr *)&clientAddr, &clilen);
+    connectSock = accept(listenSock, (struct sockaddr *)&clientAddr, &client);
     if ((pid = fork()) == 0)
     {
+      printf("Server connected with port %d\n", ntohs(clientAddr.sin_port));
       close(listenSock);
       int check = 0;
       while ((n = recv(connectSock, request, MAXLINE, 0)) > 0)
