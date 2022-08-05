@@ -161,13 +161,14 @@ int main()
           *shm = *shm - currentVoltage;
           currentVoltage = 0;
           sprintf(shm2, "%s|%s|%s|", cmd.params[0], "STOP", "0");
+          printf("%s equipment is in %s state with power consumption of %sV\n", cmd.params[0], "STOP", "0");
           check = 0;
         }
         else if (strcmp(cmd.code, "SWITCH") == 0)
         {
           sleep(1);
           sprintf(shm2, "%s|%s|%s|", cmd.params[0], cmd.params[1], cmd.params[2]);
-          printf("%s\n", shm2);
+          printf("%s equipment is in %s state with power consumption of %sV\n", cmd.params[0], cmd.params[1], cmd.params[2]);
           *shm = *shm - currentVoltage;
           currentVoltage = atoi(cmd.params[2]);
           *shm = *shm + currentVoltage;
@@ -175,6 +176,7 @@ int main()
         else
         {
           sprintf(shm2, "%s|%s|%s|", cmd.params[0], cmd.params[1], cmd.params[2]);
+          printf("%s equipment is in %s state with power consumption of %sV\n", cmd.params[0], cmd.params[1], cmd.params[2]);
           currentVoltage = atoi(cmd.params[2]);
           *shm = *shm + currentVoltage;
           if (check == 0)
