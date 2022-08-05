@@ -1,9 +1,6 @@
-log.txt
-logAR.txt
-logPC.txt
-logTV.txt
+info/equipInfo
+info/systemInfo
+log/*.txt
+log/writeLogProcess
 client
 server
-equipInfo
-systemInfo
-writeLogProcess

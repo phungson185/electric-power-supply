@@ -1,35 +1,4 @@
-#include <dirent.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-
-#define SHMSZ 4
-#define KEY "1234"
-#define MAXLINE 1024   /*max text line length*/
-#define SERV_PORT 3000 /*port*/
-#define LISTENQ 8      /*maximum number of client connections*/
-
-typedef struct
-{
-  char code[100];
-  char params[3][256];
-} command;
-
-int listenSock, connectSock, n;
-pid_t pid;
-char request[MAXLINE];
-struct sockaddr_in serverAddr, clientAddr;
-socklen_t client;
-command cmd;
-char *shm2;
+#include "../include/server.h"
 
 void getInfo(char *key_from_server)
 {
@@ -161,14 +130,14 @@ int main()
           *shm = *shm - currentVoltage;
           currentVoltage = 0;
           sprintf(shm2, "%s|%s|%s|", cmd.params[0], "STOP", "0");
-          printf("%s equipment is in %s state with power consumption of %sV\n", cmd.params[0], "STOP", "0");
+          printf("Client in port %d: %s equipment is in %s state with power consumption of %sV\n", ntohs(clientAddr.sin_port), cmd.params[0], "STOP", "0");
           check = 0;
         }
         else if (strcmp(cmd.code, "SWITCH") == 0)
         {
           sleep(1);
           sprintf(shm2, "%s|%s|%s|", cmd.params[0], cmd.params[1], cmd.params[2]);
-          printf("%s equipment is in %s state with power consumption of %sV\n", cmd.params[0], cmd.params[1], cmd.params[2]);
+          printf("Client in port %d: %s equipment is in %s state with power consumption of %sV\n", ntohs(clientAddr.sin_port), cmd.params[0], cmd.params[1], cmd.params[2]);
           *shm = *shm - currentVoltage;
           currentVoltage = atoi(cmd.params[2]);
           *shm = *shm + currentVoltage;
@@ -176,7 +145,7 @@ int main()
         else
         {
           sprintf(shm2, "%s|%s|%s|", cmd.params[0], cmd.params[1], cmd.params[2]);
-          printf("%s equipment is in %s state with power consumption of %sV\n", cmd.params[0], cmd.params[1], cmd.params[2]);
+          printf("Client in port %d: %s equipment is in %s state with power consumption of %sV\n", ntohs(clientAddr.sin_port), cmd.params[0], cmd.params[1], cmd.params[2]);
           currentVoltage = atoi(cmd.params[2]);
           *shm = *shm + currentVoltage;
           if (check == 0)
