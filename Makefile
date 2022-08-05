@@ -1,14 +1,8 @@
-systemInfo: 
-	gcc -o systemInfo systemInfo.c
-equiqInfo: 
-	gcc -o equipInfo equipInfo.c
-writeLogProcess: 
-	gcc -o writeLogProcess writeLogProcess.c
 build: 
-	gcc -o server server.c; gcc -o client client.c
+	gcc -o server ./src/server.c; gcc -o client ./src/client.c
 
-info: systemInfo equipInfo
-	./systemInfo; ./equipInfo
+info: 
+	cd info && make info
 
-log: writeLogProcess
-	./writeLogProcess
+log:
+	cd log && make log

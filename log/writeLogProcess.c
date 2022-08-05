@@ -49,7 +49,8 @@ void writeLog(char *filename, char *param1, char *param2, char *param3)
 
   fclose(fp);
 }
-main()
+
+int main()
 {
   char c;
   int shmid;
