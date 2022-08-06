@@ -40,7 +40,7 @@ void writeLog(char *filename, char *param1, char *param2, char *param3)
   fp = fopen(filename, "a");
   if (strcmp(filename, "log.txt") == 0)
   {
-    fprintf(fp, "%d\t%s\t%s\t%s\t%s\n", 1 + getLastId(filename), dateTime, param1, param2, param3);
+    fprintf(fp, "%d\t%s\t%-15s\t%s\t%s\n", 1 + getLastId(filename), dateTime, param1, param2, param3);
   }
   else
   {
@@ -94,6 +94,14 @@ int main()
       else if (strcmp(a[0], "PC") == 0)
       {
         writeLog("logPC.txt", a[0], a[1], a[2]);
+      }
+      else if (strcmp(a[0], "Radiator") == 0)
+      {
+        writeLog("logRadiator.txt", a[0], a[1], a[2]);
+      }
+      else if (strcmp(a[0], "Dehumidifier") == 0)
+      {
+        writeLog("logDehumidifier.txt", a[0], a[1], a[2]);
       }
       writeLog("log.txt", a[0], a[1], a[2]);
       strcpy(shm, "FALSE");
