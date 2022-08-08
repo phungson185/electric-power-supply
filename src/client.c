@@ -49,7 +49,7 @@ int main()
     exit(1);
   }
   printf("[+]Server connection successful.\n");
-
+  signal(SIGINT, sigHandler);
   while (1)
   {
     showMenuDevices();
@@ -98,6 +98,8 @@ void showMenuDevices()
     case 1:
       token = strtok(info, ",");
       a[0] = strtok(token, "|");
+      strcpy(runningDevice, a[0]);
+      printf("Device: %s\n", runningDevice);
       a[1] = strtok(NULL, "|");
       a[2] = strtok(NULL, "|");
       showMenuAction(a[0], atoi(a[1]), atoi(a[2]));
@@ -106,6 +108,8 @@ void showMenuDevices()
       token = strtok(info, ",");
       token = strtok(NULL, ",");
       a[0] = strtok(token, "|");
+      strcpy(runningDevice, a[0]);
+      printf("Device: %s\n", runningDevice);
       a[1] = strtok(NULL, "|");
       a[2] = strtok(NULL, "|");
       showMenuAction(a[0], atoi(a[1]), atoi(a[2]));
@@ -115,6 +119,8 @@ void showMenuDevices()
       token = strtok(NULL, ",");
       token = strtok(NULL, ",");
       a[0] = strtok(token, "|");
+      strcpy(runningDevice, a[0]);
+      printf("Device: %s\n", runningDevice);
       a[1] = strtok(NULL, "|");
       a[2] = strtok(NULL, "|");
       showMenuAction(a[0], atoi(a[1]), atoi(a[2]));
@@ -125,6 +131,8 @@ void showMenuDevices()
       token = strtok(NULL, ",");
       token = strtok(NULL, ",");
       a[0] = strtok(token, "|");
+      strcpy(runningDevice, a[0]);
+      printf("Device: %s\n", runningDevice);
       a[1] = strtok(NULL, "|");
       a[2] = strtok(NULL, "|");
       showMenuAction(a[0], atoi(a[1]), atoi(a[2]));
@@ -135,6 +143,8 @@ void showMenuDevices()
       token = strtok(NULL, ",");
       token = strtok(NULL, ",");
       a[0] = strtok(token, "|");
+      strcpy(runningDevice, a[0]);
+      printf("Device: %s\n", runningDevice);
       a[1] = strtok(NULL, "|");
       a[2] = strtok(NULL, "|");
       showMenuAction(a[0], atoi(a[1]), atoi(a[2]));
@@ -152,7 +162,7 @@ void showMenuAction(char *deviceName, int MODE_DEFAULT, int MODE_SAVING)
   {
     choice = 0;
     printf("\n\n-----------------Device Menu-------------------------\n");
-    printf("%s's Mode:\n", deviceName);
+    printf("%s's Mode:\n", runningDevice);
     printf("| 1. Normal - Power %d \n", MODE_DEFAULT);
     printf("| 2. Saving - Power %d (This mode will affect to  device's performance)\n", MODE_SAVING);
     printf("| 3. Shutdown and exit\n");
@@ -402,6 +412,8 @@ void stopDevice(char *deviceName)
 {
   *sumFirstVotage = *sumFirstVotage - firstVotage;
   char command[100];
+  printf("%s\n", deviceName);
+  printf("current %d\n", firstVotage);
   makeCommand(command, "STOP", deviceName, NULL);
   send(clientSocket, command, strlen(command), 0);
   getResponse();
@@ -415,4 +427,9 @@ void switchMode(char *deviceName, char *mode, int newVoltage)
   makeCommand(command, mode, deviceName, buffer);
   send(clientSocket, command, strlen(command), 0);
   getResponse();
+}
+
+void sigHandler(int signum) {
+   stopDevice(&runningDevice);
+   exit(1);
 }

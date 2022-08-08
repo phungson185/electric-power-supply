@@ -12,6 +12,7 @@
 #include <sys/select.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include <signal.h>
 
 #define MAXLINE 1024
 #define PORT 3000
@@ -25,6 +26,7 @@ char *shm2;
 // int currentVoltage;
 char info[1000];
 char systemInfo[1000];
+char runningDevice[100];
 int threshold;
 int maxThreshold;
 int firstVotage;
@@ -45,5 +47,6 @@ void runDevice(int defaultVoltage, int savingVoltage, char *deviceName, int isSa
 void stopDevice(char *deviceName);
 void switchMode(char *deviceName, char *mode, int newVoltage);
 void getInfo(char *key_from_server);
+void sigHandler(int signum);
 
 #endif
