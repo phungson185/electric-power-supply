@@ -3,9 +3,9 @@
 ## Run
 
 ```bash
-make info
+make info -B
 make build
-make log
+make log -B
 ./server
 ./client
 ```
