@@ -325,6 +325,7 @@ void runDevice(int defaultVoltage, int savingVoltage, char *deviceName, int isSa
     strcpy(firstName, tmpName);
     if (*shm <= threshold)
     {
+      countDown = 10;
       if (*sumFirstVotage <= threshold && check == 1)
       {
         printf("Device return to original mode!\n");
@@ -352,6 +353,7 @@ void runDevice(int defaultVoltage, int savingVoltage, char *deviceName, int isSa
     }
     else if (*shm <= maxThreshold)
     {
+      countDown = 10;
       if (*sumFirstVotage <= maxThreshold && check == 1)
       {
         printf("Device return to original mode!\n");
@@ -412,8 +414,6 @@ void stopDevice(char *deviceName)
 {
   *sumFirstVotage = *sumFirstVotage - firstVotage;
   char command[100];
-  printf("%s\n", deviceName);
-  printf("current %d\n", firstVotage);
   makeCommand(command, "STOP", deviceName, NULL);
   send(clientSocket, command, strlen(command), 0);
   getResponse();
@@ -429,7 +429,8 @@ void switchMode(char *deviceName, char *mode, int newVoltage)
   getResponse();
 }
 
-void sigHandler(int signum) {
-   stopDevice(&runningDevice);
-   exit(1);
+void sigHandler(int signum)
+{
+  stopDevice(&runningDevice);
+  exit(1);
 }
